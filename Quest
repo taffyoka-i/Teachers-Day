@@ -1,0 +1,426 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Teacher's Day Mystery Quest</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Caveat:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-handwriting { font-family: 'Caveat', cursive; }
+
+        .glow-title {
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.6), 0 0 30px rgba(99, 102, 241, 0.4);
+        }
+
+        /* 3D Envelope Styling */
+        .envelope-container {
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px 0;
+        }
+
+        .envelope {
+            position: relative;
+            width: 310px;
+            height: 200px;
+            background: #1e1b4b;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(168, 85, 247, 0.35);
+            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.34, 1.25, 0.64, 1);
+        }
+
+        .envelope:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .envelope.open {
+            transform: translateY(80px);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 155px solid transparent;
+            border-right: 155px solid transparent;
+            border-top: 115px solid #312e81;
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.6s;
+            z-index: 4;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .wax-seal {
+            position: absolute;
+            top: 80px;
+            left: 135px;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #fbbf24, #b45309);
+            border: 2px solid #fef08a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #451a03;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            z-index: 5;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .envelope.open .wax-seal {
+            opacity: 0;
+            transform: scale(0.5);
+            pointer-events: none;
+        }
+
+        .envelope-pocket-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid #2e1065;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            border-radius: 12px 0 0 12px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .envelope-pocket-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-right: 160px solid #2e1065;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            border-radius: 0 12px 12px 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .envelope-pocket-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 155px solid transparent;
+            border-right: 155px solid transparent;
+            border-bottom: 115px solid #3b0764;
+            border-radius: 0 0 12px 12px;
+            z-index: 3;
+            pointer-events: none;
+            filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.3));
+        }
+
+        .letter {
+            position: absolute;
+            bottom: 10px;
+            left: 12px;
+            width: 286px;
+            height: 175px;
+            background: #fffdfa;
+            color: #0f172a;
+            border-radius: 8px;
+            padding: 16px;
+            transition: transform 0.8s cubic-bezier(0.34, 1.25, 0.64, 1), height 0.8s, z-index 0.8s;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            overflow-y: auto;
+            border: 1px solid #fef3c7;
+        }
+
+        .envelope.open .letter {
+            transform: translateY(-185px) scale(1.05);
+            z-index: 10;
+            height: 330px;
+            max-height: 52vh;
+        }
+
+        @keyframes keyFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.05); }
+        }
+
+        .key-animate {
+            animation: keyFloat 2s ease-in-out infinite;
+        }
+
+        .dpad-btn {
+            background-color: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            transition: all 0.08s ease;
+            touch-action: manipulation;
+        }
+
+        .dpad-btn:active, .dpad-btn.active-btn {
+            background-color: #4f46e5;
+            border-color: #818cf8;
+            transform: scale(0.92);
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #eab308, #ca8a04);
+            border: 1px solid #fef08a;
+            color: #451a03;
+            font-weight: 800;
+            font-size: 0.7rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(234, 179, 8, 0.4);
+            transition: all 0.08s ease;
+        }
+
+        .action-btn:active, .action-btn.active-btn {
+            background: #facc15;
+            transform: scale(0.92);
+        }
+
+        .audio-btn {
+            background-color: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #818cf8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .audio-btn:hover {
+            background-color: rgba(49, 46, 129, 0.95);
+            color: #a5b4fc;
+        }
+    </style>
+</head>
+<body class="w-screen h-screen flex justify-center items-center relative bg-gray-950 overflow-hidden">
+
+    <div class="relative w-full h-full flex items-center justify-center">
+
+        <!-- ================= STAGE 0: MAIN MENU ================= -->
+        <div id="menu-screen" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/95 backdrop-blur-md p-6">
+            <div class="text-center max-w-md mx-auto space-y-8">
+                <h1 class="text-3xl md:text-5xl font-extrabold font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 glow-title tracking-wide px-2">
+                    Teacher's Day Mystery Quest
+                </h1>
+
+                <!-- Play & How To Play Icon-Only Buttons in One Row -->
+                <div class="flex items-center justify-center gap-6 pt-2">
+                    <button id="btn-start" class="w-16 h-16 bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white text-2xl font-bold rounded-2xl shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition flex items-center justify-center" aria-label="Play Game" title="Play Game">
+                        <i class="fas fa-play ml-1"></i>
+                    </button>
+                    <button id="btn-instructions" class="w-16 h-16 bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-200 text-2xl font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition flex items-center justify-center" aria-label="How to Play" title="How to Play">
+                        <i class="fas fa-circle-info"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= INSTRUCTIONS MODAL ================= -->
+        <div id="modal-instructions" class="hidden absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl max-w-md w-full relative shadow-2xl">
+                <button id="btn-close-modal" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h3 class="text-xl font-bold text-indigo-400 mb-4 flex items-center gap-2">
+                    <i class="fas fa-compass"></i> Instructions
+                </h3>
+                <div class="space-y-3 text-slate-300 text-xs md:text-sm">
+                    <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
+                        <div class="p-2 bg-yellow-500/20 text-yellow-400 rounded"><i class="fas fa-key"></i></div>
+                        <div>
+                            <p class="font-semibold text-white">1. Find 4 Quadrant Keys</p>
+                            <p class="text-xs text-slate-400">Avoid 4 quadrant guards and 1 door guard to unlock central exit.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
+                        <div class="p-2 bg-indigo-500/20 text-indigo-400 rounded"><i class="fas fa-search"></i></div>
+                        <div>
+                            <p class="font-semibold text-white">2. Flashlight & Controller</p>
+                            <p class="text-xs text-slate-400">Aim flashlight over furniture and tap "SEARCH" to find vault key.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
+                        <div class="p-2 bg-pink-500/20 text-pink-400 rounded"><i class="fas fa-envelope-open"></i></div>
+                        <div>
+                            <p class="font-semibold text-white">3. Open Envelope</p>
+                            <p class="text-xs text-slate-400">Unlock the vault to view your special Teacher's Day card.</p>
+                        </div>
+                    </div>
+                </div>
+                <button id="btn-modal-close" class="w-full mt-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition text-sm">
+                    Got It!
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= STAGE 1: MAZE GAME STAGE ================= -->
+        <div id="stage-maze" class="relative w-full h-full flex flex-col items-center justify-start pt-2 pb-2 px-2 hidden gap-2">
+            <!-- HUD -->
+            <div class="z-20 bg-slate-900/90 border border-slate-800 px-4 py-1.5 rounded-full backdrop-blur flex items-center gap-4 shadow-lg text-xs">
+                <div class="flex items-center gap-1.5 font-bold text-amber-300">
+                    <i class="fas fa-key"></i>
+                    <span id="keys-hud">Keys: 0 / 4</span>
+                </div>
+                <div class="h-3 w-px bg-slate-700"></div>
+                <div class="flex items-center gap-1.5 text-slate-300">
+                    <i id="exit-icon" class="fas fa-door-closed text-red-400"></i>
+                    <span id="objective-text">Collect keys to unlock center exit</span>
+                </div>
+            </div>
+
+            <!-- Canvas -->
+            <div id="canvas-container" class="relative rounded-2xl overflow-hidden border border-indigo-500/30 shadow-2xl bg-black flex items-center justify-center my-1">
+                <canvas id="maze-canvas"></canvas>
+            </div>
+
+            <!-- Stage 1 Original Controller (No Search Button) -->
+            <div id="touch-controls-maze" class="z-30 grid grid-cols-3 gap-1.5 w-36 h-36 shrink-0 mt-0">
+                <div></div>
+                <button class="dpad-btn dpad-up" aria-label="Move Up"><i class="fas fa-chevron-up"></i></button>
+                <div></div>
+                <button class="dpad-btn dpad-left" aria-label="Move Left"><i class="fas fa-chevron-left"></i></button>
+                <div class="bg-slate-900/40 rounded-xl border border-slate-800/60"></div>
+                <button class="dpad-btn dpad-right" aria-label="Move Right"><i class="fas fa-chevron-right"></i></button>
+                
+                <button class="audio-btn audio-toggle text-lg" aria-label="Toggle Audio" title="Sound Toggle">
+                    <i class="fas fa-volume-up audio-icon"></i>
+                </button>
+                
+                <button class="dpad-btn dpad-down" aria-label="Move Down"><i class="fas fa-chevron-down"></i></button>
+                <div></div>
+            </div>
+
+            <!-- Game Over Overlay -->
+            <div id="game-over-overlay" class="hidden absolute inset-0 z-40 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6">
+                <div class="text-center space-y-4 max-w-sm bg-slate-900 border border-red-500/40 p-8 rounded-2xl shadow-2xl">
+                    <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto text-3xl border border-red-500/40">
+                        <i class="fas fa-ghost animate-bounce"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-white">Caught by a Patrol!</h2>
+                    <p class="text-slate-400 text-xs md:text-sm">The entity spotted you. Watch its patrol path carefully!</p>
+                    <button id="btn-retry" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fas fa-rotate-right"></i> Retry Stage
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= STAGE 2: FLASHLIGHT ROOM ================= -->
+        <div id="stage-flashlight" class="relative w-full h-full flex flex-col items-center justify-start pt-2 pb-2 px-2 hidden gap-2 bg-slate-950">
+            <div class="z-20 bg-slate-900/90 border border-amber-500/40 px-4 py-1.5 rounded-full text-slate-200 text-xs shadow-xl backdrop-blur flex items-center gap-2 text-center">
+                <i class="fas fa-search text-amber-400"></i>
+                <span id="flashlight-status-text">Move flashlight & tap search icon to inspect!</span>
+            </div>
+
+            <!-- Canvas Container matching maze size -->
+            <div id="flash-canvas-container" class="relative rounded-2xl overflow-hidden border border-amber-500/30 shadow-2xl bg-black flex items-center justify-center my-1">
+                <canvas id="flashlight-canvas" class="block"></canvas>
+            </div>
+
+            <!-- Stage 2 Controller with Icon-Only Search Button in Center -->
+            <div id="touch-controls-flash" class="z-30 grid grid-cols-3 gap-1.5 w-36 h-36 shrink-0 mt-0">
+                <div></div>
+                <button class="dpad-btn dpad-up" aria-label="Move Up"><i class="fas fa-chevron-up"></i></button>
+                <div></div>
+                <button class="dpad-btn dpad-left" aria-label="Move Left"><i class="fas fa-chevron-left"></i></button>
+                <button class="action-btn text-base" aria-label="Search"><i class="fas fa-magnifying-glass"></i></button>
+                <button class="dpad-btn dpad-right" aria-label="Move Right"><i class="fas fa-chevron-right"></i></button>
+                
+                <button class="audio-btn audio-toggle text-lg" aria-label="Toggle Audio" title="Sound Toggle">
+                    <i class="fas fa-volume-up audio-icon"></i>
+                </button>
+                
+                <button class="dpad-btn dpad-down" aria-label="Move Down"><i class="fas fa-chevron-down"></i></button>
+                <div></div>
+            </div>
+
+            <div id="search-msg" class="hidden absolute top-14 left-1/2 -translate-x-1/2 z-50 bg-indigo-950/95 border border-indigo-400/60 px-5 py-2 rounded-xl text-indigo-100 text-xs font-semibold shadow-2xl backdrop-blur transition-all text-center">
+                <i class="fas fa-list-check text-indigo-300 mr-2"></i><span id="search-msg-text">Searching...</span>
+            </div>
+
+            <!-- Key Found Overlay -->
+            <div id="key-found-modal" class="hidden absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/75 backdrop-blur-sm p-4 transition-opacity duration-500">
+                <div class="relative flex flex-col items-center justify-center text-center max-w-xs w-full bg-slate-900/95 border border-amber-400/60 p-6 rounded-2xl shadow-2xl">
+                    <div class="w-20 h-20 flex items-center justify-center mb-3 key-animate bg-amber-500/10 rounded-full border border-amber-400/30">
+                        <i class="fas fa-key text-5xl text-amber-300 drop-shadow"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-cinzel mb-1">Key Discovered!</h3>
+                    <p class="text-amber-300 text-sm font-medium">You have found the vault key!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= STAGE 3: ENVELOPE ================= -->
+        <div id="stage-envelope" class="absolute inset-0 z-40 bg-slate-950/95 backdrop-blur-md hidden flex flex-col items-center justify-between py-6 px-4 overflow-y-auto">
+            <div class="text-center mt-2">
+                <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Vault Unlocked</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-1 font-cinzel">A Message For Teacher</h2>
+                <p class="text-slate-400 text-xs md:text-sm mt-1">Tap the envelope seal to open and read your card!</p>
+            </div>
+
+            <div class="envelope-container my-auto">
+                <div id="interactive-envelope" class="envelope">
+                    <div class="envelope-flap"></div>
+                    <div class="wax-seal"><i class="fas fa-heart"></i></div>
+                    <div class="envelope-pocket-left"></div>
+                    <div class="envelope-pocket-right"></div>
+                    <div class="envelope-pocket-bottom"></div>
+                    <div class="letter">
+                        <div class=
