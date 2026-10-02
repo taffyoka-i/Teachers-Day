@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Teacher's Day Mystery Quest</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Caveat:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-handwriting { font-family: 'Caveat', cursive; }
+
+        .glow-title {
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.6), 0 0 30px rgba(99, 102, 241, 0.4);
+        }
+
+        /* 3D Envelope Styling */
+        .envelope-container {
+            perspective: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px 0;
+        }
+
+        .envelope {
+            position: relative;
+            width: 310px;
+            height: 200px;
+            background: #1e1b4b;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(168, 85, 247, 0.35);
+            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.34, 1.25, 0.64, 1);
+        }
+
+        .envelope:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .envelope.open {
+            transform: translateY(80px);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 155px solid transparent;
+            border-right: 155px solid transparent;
+            border-top: 115px solid #312e81;
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.6s;
+            z-index: 4;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .wax-seal {
+            position: absolute;
+            top: 80px;
+            left: 135px;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #fbbf24, #b45309);
+            border: 2px solid #fef08a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #451a03;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            z-index: 5;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .envelope.open .wax-seal {
+            opacity: 0;
+            transform: scale(0.5);
+            pointer-events: none;
+        }
+
+        .envelope-pocket-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid #2e1065;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            border-radius: 12px 0 0 12px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .envelope-pocket-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-right: 160px solid #2e1065;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            border-radius: 0 12px 12px 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .envelope-pocket-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 155px solid transparent;
+            border-right: 155px solid transparent;
+            border-bottom: 115px solid #3b0764;
+            border-radius: 0 0 12px 12px;
+            z-index: 3;
+            pointer-events: none;
+            filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.3));
+        }
+
+        .letter {
+            position: absolute;
+            bottom: 10px;
+            left: 12px;
+            width: 286px;
+            height: 175px;
+            background: #fffdfa;
+            color: #0f172a;
+            border-radius: 8px;
+            padding: 16px;
+            transition: transform 0.8s cubic-bezier(0.34, 1.25, 0.64, 1), height 0.8s, z-index 0.8s;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            overflow-y: auto;
+            border: 1px solid #fef3c7;
+        }
+
+        .envelope.open .letter {
+            transform: translateY(-185px) scale(1.05);
+            z-index: 10;
+            height: 330px;
+            max-height: 52vh;
+        }
+
+        @keyframes keyFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.05); }
+        }
+
+        .key-animate {
+            animation: keyFloat 2s ease-in-out infinite;
+        }
+
+        .dpad-btn {
+            background-color: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            transition: all 0.08s ease;
+            touch-action: manipulation;
+        }
+
+        .dpad-btn:active, .dpad-btn.active-btn {
+            background-color: #4f46e5;
+            border-color: #818cf8;
+            transform: scale(0.92);
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #eab308, #ca8a04);
+            border: 1px solid #fef08a;
+            color: #451a03;
+            font-weight: 800;
+            font-size: 0.7rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(234, 179, 8, 0.4);
+            transition: all 0.08s ease;
+        }
+
+        .action-btn:active, .action-btn.active-btn {
+            background: #facc15;
+            transform: scale(0.92);
+        }
+
+        .audio-btn {
+            background-color: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #818cf8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .audio-btn:hover {
+            background-color: rgba(49, 46, 129, 0.95);
+            color: #a5b4fc;
+        }
+    </style>
+</head>
+<body class="w-screen h-screen flex justify-center items-center relative bg-gray-950 overflow-hidden">
+
+    <div class="relative w-full h-full flex items-center justify-center">
+
+        <!-- ================= STAGE 0: MAIN MENU ================= -->
+        <div id="menu-screen" class="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/95 backdrop-blur-md p-6">
+            <div class="text-center max-w-md mx-auto space-y-8">
+                <h1 class="text-3xl md:text-5xl font-extrabold font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 glow-title tracking-wide px-2">
+                    Teacher's Day Mystery Quest
+                </h1>
+
+                <!-- Play & How To Play Icon-Only Buttons in One Row -->
+                <div class="flex items-center justify-center gap-6 pt-2">
+                    <button id="btn-start" class="w-16 h-16 bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white text-2xl font-bold rounded-2xl shadow-lg shadow-indigo-500/30 hover:scale-105 active:scale-95 transition flex items-center justify-center" aria-label="Play Game" title="Play Game">
+                        <i class="fas fa-play ml-1"></i>
+                    </button>
+                    <button id="btn-instructions" class="w-16 h-16 bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-200 text-2xl font-bold rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition flex items-center justify-center" aria-label="How to Play" title="How to Play">
+                        <i class="fas fa-circle-info"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= INSTRUCTIONS MODAL ================= -->
+        <div id="modal-instructions" class="hidden absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl max-w-md w-full relative shadow-2xl">
+                <button id="btn-close-modal" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h3 class="text-xl font-bold text-indigo-400 mb-4 flex items-center gap-2">
+                    <i class="fas fa-compass"></i> Instructions
+                </h3>
+                <div class="space-y-3 text-slate-300 text-xs md:text-sm">
+                    <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
+                        <div class="p-2 bg-yellow-500/20 text-yellow-400 rounded"><i class="fas fa-key"></i></div>
+                        <div>
+                            <p class="font-semibold text-white">1. Find 4 Quadrant Keys</p>
+                            <p class="text-xs text-slate-400">Avoid 4 quadrant guards and 1 door guard to unlock central exit.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
+                        <div class="p-2 bg-indigo-500/20 text-indigo-400 rounded"><i class="fas fa-search"></i></div>
+                        <div>
+                            <p class="font-semibold text-white">2. Flashlight & Controller</p>
+                            <p class="text-xs text-slate-400">Aim flashlight over furniture and tap "SEARCH" to find vault key.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-800/60 p-3 rounded-lg border border-slate-700/50">
+                        <div class="p-2 bg-pink-500/20 text-pink-400 rounded"><i class="fas fa-envelope-open"></i></div>
+                        <div>
+                            <p class="font-semibold text-white">3. Open Envelope</p>
+                            <p class="text-xs text-slate-400">Unlock the vault to view your special Teacher's Day card.</p>
+                        </div>
+                    </div>
+                </div>
+                <button id="btn-modal-close" class="w-full mt-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition text-sm">
+                    Got It!
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= STAGE 1: MAZE GAME STAGE ================= -->
+        <div id="stage-maze" class="relative w-full h-full flex flex-col items-center justify-start pt-2 pb-2 px-2 hidden gap-2">
+            <!-- HUD -->
+            <div class="z-20 bg-slate-900/90 border border-slate-800 px-4 py-1.5 rounded-full backdrop-blur flex items-center gap-4 shadow-lg text-xs">
+                <div class="flex items-center gap-1.5 font-bold text-amber-300">
+                    <i class="fas fa-key"></i>
+                    <span id="keys-hud">Keys: 0 / 4</span>
+                </div>
+                <div class="h-3 w-px bg-slate-700"></div>
+                <div class="flex items-center gap-1.5 text-slate-300">
+                    <i id="exit-icon" class="fas fa-door-closed text-red-400"></i>
+                    <span id="objective-text">Collect keys to unlock center exit</span>
+                </div>
+            </div>
+
+            <!-- Canvas -->
+            <div id="canvas-container" class="relative rounded-2xl overflow-hidden border border-indigo-500/30 shadow-2xl bg-black flex items-center justify-center my-1">
+                <canvas id="maze-canvas"></canvas>
+            </div>
+
+            <!-- Stage 1 Original Controller (No Search Button) -->
+            <div id="touch-controls-maze" class="z-30 grid grid-cols-3 gap-1.5 w-36 h-36 shrink-0 mt-0">
+                <div></div>
+                <button class="dpad-btn dpad-up" aria-label="Move Up"><i class="fas fa-chevron-up"></i></button>
+                <div></div>
+                <button class="dpad-btn dpad-left" aria-label="Move Left"><i class="fas fa-chevron-left"></i></button>
+                <div class="bg-slate-900/40 rounded-xl border border-slate-800/60"></div>
+                <button class="dpad-btn dpad-right" aria-label="Move Right"><i class="fas fa-chevron-right"></i></button>
+                
+                <button class="audio-btn audio-toggle text-lg" aria-label="Toggle Audio" title="Sound Toggle">
+                    <i class="fas fa-volume-up audio-icon"></i>
+                </button>
+                
+                <button class="dpad-btn dpad-down" aria-label="Move Down"><i class="fas fa-chevron-down"></i></button>
+                <div></div>
+            </div>
+
+            <!-- Game Over Overlay -->
+            <div id="game-over-overlay" class="hidden absolute inset-0 z-40 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6">
+                <div class="text-center space-y-4 max-w-sm bg-slate-900 border border-red-500/40 p-8 rounded-2xl shadow-2xl">
+                    <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto text-3xl border border-red-500/40">
+                        <i class="fas fa-ghost animate-bounce"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-white">Caught by a Patrol!</h2>
+                    <p class="text-slate-400 text-xs md:text-sm">The entity spotted you. Watch its patrol path carefully!</p>
+                    <button id="btn-retry" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fas fa-rotate-right"></i> Retry Stage
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= STAGE 2: FLASHLIGHT ROOM ================= -->
+        <div id="stage-flashlight" class="relative w-full h-full flex flex-col items-center justify-start pt-2 pb-2 px-2 hidden gap-2 bg-slate-950">
+            <div class="z-20 bg-slate-900/90 border border-amber-500/40 px-4 py-1.5 rounded-full text-slate-200 text-xs shadow-xl backdrop-blur flex items-center gap-2 text-center">
+                <i class="fas fa-search text-amber-400"></i>
+                <span id="flashlight-status-text">Move flashlight & tap search icon to inspect!</span>
+            </div>
+
+            <!-- Canvas Container matching maze size -->
+            <div id="flash-canvas-container" class="relative rounded-2xl overflow-hidden border border-amber-500/30 shadow-2xl bg-black flex items-center justify-center my-1">
+                <canvas id="flashlight-canvas" class="block"></canvas>
+            </div>
+
+            <!-- Stage 2 Controller with Icon-Only Search Button in Center -->
+            <div id="touch-controls-flash" class="z-30 grid grid-cols-3 gap-1.5 w-36 h-36 shrink-0 mt-0">
+                <div></div>
+                <button class="dpad-btn dpad-up" aria-label="Move Up"><i class="fas fa-chevron-up"></i></button>
+                <div></div>
+                <button class="dpad-btn dpad-left" aria-label="Move Left"><i class="fas fa-chevron-left"></i></button>
+                <button class="action-btn text-base" aria-label="Search"><i class="fas fa-magnifying-glass"></i></button>
+                <button class="dpad-btn dpad-right" aria-label="Move Right"><i class="fas fa-chevron-right"></i></button>
+                
+                <button class="audio-btn audio-toggle text-lg" aria-label="Toggle Audio" title="Sound Toggle">
+                    <i class="fas fa-volume-up audio-icon"></i>
+                </button>
+                
+                <button class="dpad-btn dpad-down" aria-label="Move Down"><i class="fas fa-chevron-down"></i></button>
+                <div></div>
+            </div>
+
+            <div id="search-msg" class="hidden absolute top-14 left-1/2 -translate-x-1/2 z-50 bg-indigo-950/95 border border-indigo-400/60 px-5 py-2 rounded-xl text-indigo-100 text-xs font-semibold shadow-2xl backdrop-blur transition-all text-center">
+                <i class="fas fa-list-check text-indigo-300 mr-2"></i><span id="search-msg-text">Searching...</span>
+            </div>
+
+            <!-- Key Found Overlay -->
+            <div id="key-found-modal" class="hidden absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/75 backdrop-blur-sm p-4 transition-opacity duration-500">
+                <div class="relative flex flex-col items-center justify-center text-center max-w-xs w-full bg-slate-900/95 border border-amber-400/60 p-6 rounded-2xl shadow-2xl">
+                    <div class="w-20 h-20 flex items-center justify-center mb-3 key-animate bg-amber-500/10 rounded-full border border-amber-400/30">
+                        <i class="fas fa-key text-5xl text-amber-300 drop-shadow"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-cinzel mb-1">Key Discovered!</h3>
+                    <p class="text-amber-300 text-sm font-medium">You have found the vault key!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= STAGE 3: ENVELOPE ================= -->
+        <div id="stage-envelope" class="absolute inset-0 z-40 bg-slate-950/95 backdrop-blur-md hidden flex flex-col items-center justify-between py-6 px-4 overflow-y-auto">
+            <div class="text-center mt-2">
+                <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Vault Unlocked</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-1 font-cinzel">A Message For Teacher</h2>
+                <p class="text-slate-400 text-xs md:text-sm mt-1">Tap the envelope seal to open and read your card!</p>
+            </div>
+
+            <div class="envelope-container my-auto">
+                <div id="interactive-envelope" class="envelope">
+                    <div class="envelope-flap"></div>
+                    <div class="wax-seal"><i class="fas fa-heart"></i></div>
+                    <div class="envelope-pocket-left"></div>
+                    <div class="envelope-pocket-right"></div>
+                    <div class="envelope-pocket-bottom"></div>
+                    <div class="letter">
+                        <div class="text-center pb-2 border-b border-amber-200/80 mb-2">
+                            <span class="text-[10px] font-bold tracking-widest text-indigo-900 uppercase block">Happy Teacher's Day</span>
+                            <h3 class="text-2xl font-bold font-handwriting text-indigo-950 mt-0.5">To Our Amazing Teacher</h3>
+                        </div>
+                        <div class="space-y-2.5 font-handwriting text-lg md:text-xl text-slate-800 leading-relaxed">
+                            <p>Dear Teacher,</p>
+                            <p>
+                                Just like navigating through dark, intricate mazes and searching for hidden keys, learning often presents us with daunting challenges and twists.
+                            </p>
+                            <p>
+                                Thank you for being our constant light—guiding us through every step, inspiring our curiosity, and helping us unlock our full potential.
+                            </p>
+                            <p class="text-right font-bold text-indigo-950 pt-1">
+                                With endless thanks & love,<br>Your Students ❤️
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <button id="btn-replay" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl shadow-lg transition flex items-center gap-2">
+                    <i class="fas fa-rotate-left"></i> Play Quest Again
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        class SoundSystem {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playTone(freq, type = 'sine', duration = 0.1, vol = 0.1) {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e){}
+            }
+
+            playFootstep() { this.playTone(120 + Math.random() * 40, 'triangle', 0.04, 0.02); }
+            playKeyCollect() {
+                this.playTone(659.25, 'sine', 0.1, 0.2);
+                setTimeout(() => this.playTone(880, 'sine', 0.2, 0.2), 80);
+                setTimeout(() => this.playTone(1046.5, 'sine', 0.25, 0.2), 160);
+            }
+            playSearch() {
+                this.playTone(300, 'sine', 0.08, 0.08);
+                setTimeout(() => this.playTone(450, 'triangle', 0.1, 0.1), 60);
+            }
+            playVaultUnlock() {
+                this.playTone(300, 'square', 0.15, 0.15);
+                setTimeout(() => this.playTone(500, 'square', 0.15, 0.15), 120);
+                setTimeout(() => this.playTone(700, 'sine', 0.3, 0.25), 240);
+            }
+            playWin() {
+                if (!this.enabled || !this.ctx) return;
+                const notes = [261.63, 329.63, 392.00, 523.25];
+                notes.forEach((f, i) => setTimeout(() => this.playTone(f, 'sine', 0.25, 0.15), i * 120));
+            }
+            playCaught() { this.playTone(110, 'sawtooth', 0.4, 0.2); }
+        }
+
+        const sound = new SoundSystem();
+
+        const mazeCanvas = document.getElementById('maze-canvas');
+        const mazeCtx = mazeCanvas.getContext('2d');
+
+        const GRID_SIZE = 21;
+        const RENDER_CELL_SIZE = 40;
+        
+        const FIXED_MAP = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1],
+            [1,0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,0,1],
+            [1,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,1],
+            [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1],
+            [1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1],
+            [1,1,1,0,1,1,1,0,1,0,1,0,1,0,1,1,1,0,1,1,1],
+            [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1],
+            [1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
+            [1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
+            [1,1,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,1,1],
+            [1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
+            [1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1],
+            [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1],
+            [1,1,1,0,1,1,1,0,1,0,1,0,1,0,1,1,1,0,1,1,1],
+            [1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1],
+            [1,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,1],
+            [1,0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,0,1],
+            [1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        let player = { px: 1.5 * RENDER_CELL_SIZE, py: 1.5 * RENDER_CELL_SIZE, speed: 2.0, radius: 9, facingDx: 1, facingDy: 0 };
+
+        let enemies = [];
+
+        function initEnemies() {
+            enemies = [
+                // Quadrant 1 Guard (Top-Left)
+                {
+                    px: 1.5 * RENDER_CELL_SIZE,
+                    py: 5.5 * RENDER_CELL_SIZE,
+                    speed: 0.95,
+                    radius: 9,
+                    color: '#ef4444',
+                    aura: 'rgba(239, 68, 68, 0.95)',
+                    waypoints: [{x:1,y:5}, {x:7,y:5}, {x:7,y:1}, {x:1,y:1}, {x:1,y:5}],
+                    waypointIndex: 0
+                },
+                // Quadrant 2 Guard (Top-Right)
+                {
+                    px: 19.5 * RENDER_CELL_SIZE,
+                    py: 1.5 * RENDER_CELL_SIZE,
+                    speed: 0.9,
+                    radius: 9,
+                    color: '#a855f7',
+                    aura: 'rgba(168, 85, 247, 0.95)',
+                    waypoints: [{x:19,y:1}, {x:13,y:1}, {x:13,y:5}, {x:19,y:5}],
+                    waypointIndex: 0
+                },
+                // Quadrant 3 Guard (Bottom-Left)
+                {
+                    px: 1.5 * RENDER_CELL_SIZE,
+                    py: 19.5 * RENDER_CELL_SIZE,
+                    speed: 0.85,
+                    radius: 9,
+                    color: '#f97316',
+                    aura: 'rgba(249, 115, 22, 0.95)',
+                    waypoints: [{x:1,y:19}, {x:7,y:19}, {x:7,y:15}, {x:1,y:15}],
+                    waypointIndex: 0
+                },
+                // Quadrant 4 Guard (Bottom-Right)
+                {
+                    px: 19.5 * RENDER_CELL_SIZE,
+                    py: 15.5 * RENDER_CELL_SIZE,
+                    speed: 1.0,
+                    radius: 9,
+                    color: '#ec4899',
+                    aura: 'rgba(236, 72, 153, 0.95)',
+                    waypoints: [{x:19,y:15}, {x:19,y:19}, {x:13,y:19}, {x:13,y:15}],
+                    waypointIndex: 0
+                },
+                // Center Door Guard (Patrolling Around Exit Door)
+                {
+                    px: 10.5 * RENDER_CELL_SIZE,
+                    py: 8.5 * RENDER_CELL_SIZE,
+                    speed: 0.85,
+                    radius: 9,
+                    color: '#10b981',
+                    aura: 'rgba(16, 185, 129, 0.95)',
+                    waypoints: [{x:10,y:8}, {x:12,y:10}, {x:10,y:12}, {x:8,y:10}],
+                    waypointIndex: 0
+                }
+            ];
+        }
+
+        let mazeKeys = [];
+        let collectedKeysCount = 0;
+        const TOTAL_MAZE_KEYS = 4;
+        let isExitUnlocked = false;
+
+        let keys = {};
+        let mazeLoopId = null;
+        let isMazeActive = false;
+
+        function setupMazeDimensions() {
+            const maxW = Math.min(window.innerWidth - 24, 420);
+            const maxH = Math.min(window.innerHeight - 260, 380);
+            const viewportSize = Math.max(260, Math.min(maxW, maxH));
+
+            mazeCanvas.width = viewportSize;
+            mazeCanvas.height = viewportSize;
+
+            resetGamePositions();
+        }
+
+        function resetGamePositions() {
+            player.px = 1.5 * RENDER_CELL_SIZE;
+            player.py = 1.5 * RENDER_CELL_SIZE;
+            player.facingDx = 1;
+            player.facingDy = 0;
+
+            initEnemies();
+
+            // 4 Keys scattered in 4 Quadrants
+            const keyLocations = [
+                { gx: 1, gy: 3 },   // Quadrant 1 (Top-Left)
+                { gx: 19, gy: 3 },  // Quadrant 2 (Top-Right)
+                { gx: 1, gy: 17 },  // Quadrant 3 (Bottom-Left)
+                { gx: 19, gy: 17 }  // Quadrant 4 (Bottom-Right)
+            ];
+
+            mazeKeys = keyLocations.map(loc => ({
+                gx: loc.gx,
+                gy: loc.gy,
+                px: (loc.gx + 0.5) * RENDER_CELL_SIZE,
+                py: (loc.gy + 0.5) * RENDER_CELL_SIZE,
+                collected: false
+            }));
+
+            collectedKeysCount = 0;
+            isExitUnlocked = false;
+
+            document.getElementById('keys-hud').innerText = `Keys: 0 / ${TOTAL_MAZE_KEYS}`;
+            document.getElementById('exit-icon').className = 'fas fa-door-closed text-red-400';
+            document.getElementById('objective-text').innerText = 'Collect keys to unlock center exit';
+        }
+
+        function isPointInWall(px, py, radius) {
+            const checkPoints = [
+                { x: px - radius, y: py - radius },
+                { x: px + radius, y: py - radius },
+                { x: px - radius, y: py + radius },
+                { x: px + radius, y: py + radius }
+            ];
+
+            for (let pt of checkPoints) {
+                let gx = Math.floor(pt.x / RENDER_CELL_SIZE);
+                let gy = Math.floor(pt.y / RENDER_CELL_SIZE);
+
+                if (gx < 0 || gx >= GRID_SIZE || gy < 0 || gy >= GRID_SIZE) return true;
+                if (FIXED_MAP[gy][gx] === 1) return true;
+            }
+            return false;
+        }
+
+        function movePlayerSmoothly(dx, dy) {
+            let nextX = player.px + dx;
+            let nextY = player.py + dy;
+
+            if (dx !== 0 || dy !== 0) {
+                player.facingDx = dx;
+                player.facingDy = dy;
+            }
+
+            if (!isPointInWall(nextX, nextY, player.radius)) {
+                player.px = nextX;
+                player.py = nextY;
+                return;
+            }
+
+            if (!isPointInWall(nextX, player.py, player.radius)) {
+                player.px = nextX;
+                return;
+            }
+
+            if (!isPointInWall(player.px, nextY, player.radius)) {
+                player.py = nextY;
+                return;
+            }
+        }
+
+        function updateMazePhysics() {
+            if (!isMazeActive) return;
+
+            let dx = 0;
+            let dy = 0;
+            if (keys['up'] || keys['ArrowUp'] || keys['w'] || keys['W']) dy -= player.speed;
+            if (keys['down'] || keys['ArrowDown'] || keys['s'] || keys['S']) dy += player.speed;
+            if (keys['left'] || keys['ArrowLeft'] || keys['a'] || keys['A']) dx -= player.speed;
+            if (keys['right'] || keys['ArrowRight'] || keys['d'] || keys['D']) dx += player.speed;
+
+            if (dx !== 0 || dy !== 0) {
+                movePlayerSmoothly(dx, dy);
+                if (Math.random() < 0.08) sound.playFootstep();
+            }
+
+            mazeKeys.forEach(k => {
+                if (!k.collected) {
+                    let dist = Math.hypot(player.px - k.px, player.py - k.py);
+                    if (dist < RENDER_CELL_SIZE * 0.45) {
+                        k.collected = true;
+                        collectedKeysCount++;
+                        sound.playKeyCollect();
+                        document.getElementById('keys-hud').innerText = `Keys: ${collectedKeysCount} / ${TOTAL_MAZE_KEYS}`;
+
+                        if (collectedKeysCount >= TOTAL_MAZE_KEYS) {
+                            isExitUnlocked = true;
+                            document.getElementById('exit-icon').className = 'fas fa-door-open text-emerald-400 animate-pulse';
+                            document.getElementById('objective-text').innerText = 'Exit Door Unlocked! Head to the CENTER!';
+                        }
+                    }
+                }
+            });
+
+            enemies.forEach(enemy => {
+                let targetNode = enemy.waypoints[enemy.waypointIndex];
+                let targetPx = (targetNode.x + 0.5) * RENDER_CELL_SIZE;
+                let targetPy = (targetNode.y + 0.5) * RENDER_CELL_SIZE;
+
+                let edx = targetPx - enemy.px;
+                let edy = targetPy - enemy.py;
+                let dist = Math.hypot(edx, edy);
+
+                if (dist < 3) {
+                    enemy.waypointIndex = (enemy.waypointIndex + 1) % enemy.waypoints.length;
+                } else {
+                    enemy.px += (edx / dist) * enemy.speed;
+                    enemy.py += (edy / dist) * enemy.speed;
+                }
+
+                let distToPlayer = Math.hypot(player.px - enemy.px, player.py - enemy.py);
+                if (distToPlayer < (player.radius + enemy.radius + 1)) {
+                    isMazeActive = false;
+                    sound.playCaught();
+                    document.getElementById('game-over-overlay').classList.remove('hidden');
+                }
+            });
+
+            let exitPx = (10 + 0.5) * RENDER_CELL_SIZE;
+            let exitPy = (10 + 0.5) * RENDER_CELL_SIZE;
+            let distToExit = Math.hypot(player.px - exitPx, player.py - exitPy);
+
+            if (distToExit < RENDER_CELL_SIZE * 0.5 && isExitUnlocked) {
+                isMazeActive = false;
+                sound.playWin();
+                setTimeout(transitionToFlashlightStage, 400);
+            }
+        }
+
+        function drawDetailedPlayer(ctx, px, py) {
+            ctx.save();
+            ctx.translate(px, py);
+
+            ctx.fillStyle = '#475569';
+            ctx.fillRect(-8, -4, 4, 8);
+
+            ctx.fillStyle = '#334155';
+            ctx.beginPath();
+            ctx.arc(0, -2, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#6366f1';
+            ctx.beginPath();
+            ctx.arc(0, -3, 7.5, Math.PI, 0);
+            ctx.fill();
+
+            ctx.fillStyle = '#4f46e5';
+            let visorAngle = Math.atan2(player.facingDy, player.facingDx);
+            ctx.fillRect(Math.cos(visorAngle) * 3 - 2, Math.sin(visorAngle) * 3 - 4, 6, 3);
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.beginPath();
+            ctx.arc(-2, -2, 2, 0, Math.PI * 2);
+            ctx.arc(2, -2, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.arc(-2, -2, 1, 0, Math.PI * 2);
+            ctx.arc(2, -2, 1, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(5, 3, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawDetailedDoor(ctx, x, y, unlocked) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            let dw = 26;
+            let dh = 32;
+
+            ctx.fillStyle = '#451a03';
+            ctx.fillRect(-dw/2 - 3, -dh/2 - 3, dw + 6, dh + 6);
+
+            ctx.fillStyle = unlocked ? '#78350f' : '#3f2305';
+            ctx.fillRect(-dw/2, -dh/2, dw, dh);
+
+            ctx.strokeStyle = '#271003';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(-dw/2 + 3, -dh/2 + 3, dw/2 - 4, dh/2 - 5);
+            ctx.strokeRect(1, -dh/2 + 3, dw/2 - 4, dh/2 - 5);
+            ctx.strokeRect(-dw/2 + 3, 1, dw - 6, dh/2 - 4);
+
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(dw/2 - 5, 2, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = unlocked ? '#34d399' : '#0f172a';
+            ctx.beginPath();
+            ctx.arc(dw/2 - 5, 2, 1.2, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (unlocked) {
+                let doorGlow = ctx.createRadialGradient(0, 0, 4, 0, 0, 22);
+                doorGlow.addColorStop(0, 'rgba(52, 211, 153, 0.6)');
+                doorGlow.addColorStop(1, 'rgba(52, 211, 153, 0)');
+                ctx.fillStyle = doorGlow;
+                ctx.beginPath();
+                ctx.arc(0, 0, 22, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        function drawDetailedKey(ctx, kx, ky, scale = 1) {
+            ctx.save();
+            ctx.translate(kx, ky);
+            ctx.scale(scale, scale);
+
+            let glowGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, 14);
+            glowGrad.addColorStop(0, 'rgba(253, 224, 71, 0.9)');
+            glowGrad.addColorStop(0.5, 'rgba(234, 179, 8, 0.4)');
+            glowGrad.addColorStop(1, 'rgba(234, 179, 8, 0)');
+            ctx.fillStyle = glowGrad;
+            ctx.beginPath();
+            ctx.arc(0, 0, 15, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#fef08a';
+            ctx.fillStyle = '#eab308';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(-6, 0, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#fde047';
+            ctx.fillRect(-2, -1.5, 12, 3);
+            ctx.fillRect(4, 1.5, 2.5, 4);
+            ctx.fillRect(8, 1.5, 2.5, 3);
+
+            ctx.restore();
+        }
+
+        function renderMazeCanvas() {
+            mazeCtx.clearRect(0, 0, mazeCanvas.width, mazeCanvas.height);
+
+            let camX = player.px - mazeCanvas.width / 2;
+            let camY = player.py - mazeCanvas.height / 2;
+
+            mazeCtx.save();
+            mazeCtx.translate(-camX, -camY);
+
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    let x = c * RENDER_CELL_SIZE;
+                    let y = r * RENDER_CELL_SIZE;
+
+                    if (FIXED_MAP[r][c] === 1) {
+                        mazeCtx.fillStyle = '#1e293b';
+                        mazeCtx.fillRect(x, y, RENDER_CELL_SIZE, RENDER_CELL_SIZE);
+                        mazeCtx.strokeStyle = '#334155';
+                        mazeCtx.lineWidth = 1;
+                        mazeCtx.strokeRect(x, y, RENDER_CELL_SIZE, RENDER_CELL_SIZE);
+                    } else {
+                        mazeCtx.fillStyle = '#090d16';
+                        mazeCtx.fillRect(x, y, RENDER_CELL_SIZE, RENDER_CELL_SIZE);
+                    }
+                }
+            }
+
+            let exitPx = (10 + 0.5) * RENDER_CELL_SIZE;
+            let exitPy = (10 + 0.5) * RENDER_CELL_SIZE;
+            drawDetailedDoor(mazeCtx, exitPx, exitPy, isExitUnlocked);
+
+            mazeKeys.forEach(k => {
+                if (!k.collected) {
+                    let floatY = Math.sin(Date.now() * 0.006 + k.gx) * 3;
+                    drawDetailedKey(mazeCtx, k.px, k.py + floatY, 0.9);
+                }
+            });
+
+            enemies.forEach(enemy => {
+                mazeCtx.save();
+                mazeCtx.shadowColor = enemy.color;
+                mazeCtx.shadowBlur = 12;
+                mazeCtx.fillStyle = enemy.color;
+                mazeCtx.beginPath();
+                mazeCtx.arc(enemy.px, enemy.py, enemy.radius, 0, Math.PI * 2);
+                mazeCtx.fill();
+                mazeCtx.restore();
+            });
+
+            drawDetailedPlayer(mazeCtx, player.px, player.py);
+
+            mazeCtx.restore();
+
+            // Darkness Spotlight Overlay
+            let screenCenterX = mazeCanvas.width / 2;
+            let screenCenterY = mazeCanvas.height / 2;
+            let radius = RENDER_CELL_SIZE * 2.8;
+
+            let darkGrad = mazeCtx.createRadialGradient(
+                screenCenterX, screenCenterY, radius * 0.25,
+                screenCenterX, screenCenterY, radius
+            );
+            darkGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+            darkGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0.85)');
+            darkGrad.addColorStop(1, 'rgba(3, 7, 18, 0.99)');
+
+            mazeCtx.fillStyle = darkGrad;
+            mazeCtx.fillRect(0, 0, mazeCanvas.width, mazeCanvas.height);
+
+            enemies.forEach(enemy => {
+                let exScreen = enemy.px - camX;
+                let eyScreen = enemy.py - camY;
+
+                mazeCtx.save();
+                let enemyLight = mazeCtx.createRadialGradient(exScreen, eyScreen, 2, exScreen, eyScreen, 40);
+                enemyLight.addColorStop(0, enemy.aura);
+                enemyLight.addColorStop(0.4, enemy.aura.replace('0.95', '0.4'));
+                enemyLight.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+                mazeCtx.fillStyle = enemyLight;
+                mazeCtx.beginPath();
+                mazeCtx.arc(exScreen, eyScreen, 40, 0, Math.PI * 2);
+                mazeCtx.fill();
+
+                mazeCtx.fillStyle = '#fef08a';
+                mazeCtx.beginPath();
+                mazeCtx.arc(exScreen - 3, eyScreen - 2, 2, 0, Math.PI * 2);
+                mazeCtx.arc(exScreen + 3, eyScreen - 2, 2, 0, Math.PI * 2);
+                mazeCtx.fill();
+                mazeCtx.restore();
+            });
+        }
+
+        const flashCanvas = document.getElementById('flashlight-canvas');
+        const flashCtx = flashCanvas.getContext('2d');
+
+        let flashPos = { x: 150, y: 150 };
+        let flashRadius = 55;
+        let isFlashActive = false;
+        let flashLoopId = null;
+        let hasVaultKey = false;
+        let searchedCount = 0;
+        const TOTAL_SEARCH_SPOTS = 3;
+
+        let roomObjects = [];
+        let dustParticles = [];
+
+        function setupFlashlightDimensions() {
+            const viewportSize = mazeCanvas.width || 300;
+            flashCanvas.width = viewportSize;
+            flashCanvas.height = viewportSize;
+
+            flashPos.x = viewportSize / 2;
+            flashPos.y = viewportSize / 2;
+
+            initFlashlightRoom(viewportSize);
+        }
+
+        function initFlashlightRoom(size) {
+            let cx = size / 2;
+            let cy = size / 2;
+            let scale = size / 320;
+
+            roomObjects = [
+                { id: 'desk', name: 'Executive Desk', type: 'desk', x: cx - 60 * scale, y: cy - 55 * scale, width: 85 * scale, height: 55 * scale, searched: false },
+                { id: 'bookshelf', name: 'Bookshelf', type: 'bookshelf', x: cx + 65 * scale, y: cy - 50 * scale, width: 75 * scale, height: 75 * scale, searched: false },
+                { id: 'cabinet', name: 'Filing Cabinet', type: 'cabinet', x: cx - 60 * scale, y: cy + 60 * scale, width: 65 * scale, height: 70 * scale, searched: false },
+                { id: 'vault', name: 'Vault Lock', type: 'vault', x: cx + 65 * scale, y: cy + 60 * scale, width: 70 * scale, height: 70 * scale, searched: false }
+            ];
+
+            searchedCount = 0;
+            hasVaultKey = false;
+
+            dustParticles = [];
+            for (let i = 0; i < 20; i++) {
+                dustParticles.push({
+                    x: Math.random() * size,
+                    y: Math.random() * size,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    size: Math.random() * 2 + 1,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+
+        function showSearchMsg(text) {
+            const msgContainer = document.getElementById('search-msg');
+            const msgText = document.getElementById('search-msg-text');
+            msgText.innerText = text;
+            msgContainer.classList.remove('hidden');
+            clearTimeout(window.searchTimer);
+            window.searchTimer = setTimeout(() => {
+                msgContainer.classList.add('hidden');
+            }, 2500);
+        }
+
+        function showKeyFoundModal() {
+            const keyModal = document.getElementById('key-found-modal');
+            keyModal.classList.remove('hidden');
+            sound.playKeyCollect();
+            setTimeout(() => {
+                keyModal.classList.add('hidden');
+            }, 2200);
+        }
+
+        function handleFlashlightAction() {
+            if (!isFlashActive) return;
+
+            const mx = flashPos.x;
+            const my = flashPos.y;
+
+            for (let obj of roomObjects) {
+                let halfW = obj.width / 2;
+                let halfH = obj.height / 2;
+                if (mx >= obj.x - halfW && mx <= obj.x + halfW &&
+                    my >= obj.y - halfH && my <= obj.y + halfH) {
+
+                    if (obj.type === 'vault') {
+                        if (hasVaultKey) {
+                            sound.playVaultUnlock();
+                            isFlashActive = false;
+                            if (flashLoopId) cancelAnimationFrame(flashLoopId);
+                            transitionToEnvelopeStage();
+                        } else {
+                            sound.playSearch();
+                            showSearchMsg("Vault is locked! Search room furniture first.");
+                        }
+                        return;
+                    }
+
+                    if (obj.searched) {
+                        showSearchMsg(`Already searched here.`);
+                        return;
+                    }
+
+                    obj.searched = true;
+                    searchedCount++;
+                    sound.playSearch();
+
+                    if (searchedCount === TOTAL_SEARCH_SPOTS) {
+                        hasVaultKey = true;
+                        showKeyFoundModal();
+                        showSearchMsg(`Found Key! Aim flashlight at Vault & press SEARCH.`);
+                        document.getElementById('flashlight-status-text').innerText = "Key Found! Aim flashlight at Vault & press SEARCH.";
+                    } else {
+                        showSearchMsg(`Searched (${searchedCount}/${TOTAL_SEARCH_SPOTS} checked). Key is not here.`);
+                    }
+                    return;
+                }
+            }
+            showSearchMsg("Nothing here. Aim flashlight directly over furniture!");
+        }
+
+        function updateFlashlightPhysics() {
+            if (!isFlashActive) return;
+
+            let moveSpeed = 2.8;
+            if (keys['up'] || keys['ArrowUp'] || keys['w'] || keys['W']) flashPos.y -= moveSpeed;
+            if (keys['down'] || keys['ArrowDown'] || keys['s'] || keys['S']) flashPos.y += moveSpeed;
+            if (keys['left'] || keys['ArrowLeft'] || keys['a'] || keys['A']) flashPos.x -= moveSpeed;
+            if (keys['right'] || keys['ArrowRight'] || keys['d'] || keys['D']) flashPos.x += moveSpeed;
+
+            flashPos.x = Math.max(15, Math.min(flashCanvas.width - 15, flashPos.x));
+            flashPos.y = Math.max(15, Math.min(flashCanvas.height - 15, flashPos.y));
+        }
+
+        function drawUnsearchedOutline(ctx, x, y, width, height) {
+            ctx.save();
+            let pulse = (Math.sin(Date.now() * 0.006) + 1) / 2;
+            ctx.strokeStyle = `rgba(250, 204, 21, ${0.4 + pulse * 0.5})`;
+            ctx.lineWidth = 2.5;
+            ctx.setLineDash([6, 4]);
+            ctx.strokeRect(x - 3, y - 3, width + 6, height + 6);
+            ctx.restore();
+        }
+
+        function renderExecutiveDesk(ctx, obj) {
+            let x = obj.x - obj.width / 2;
+            let y = obj.y - obj.height / 2;
+
+            if (!obj.searched) drawUnsearchedOutline(ctx, x, y, obj.width, obj.height);
+
+            let woodGrad = ctx.createLinearGradient(x, y, x + obj.width, y + obj.height);
+            woodGrad.addColorStop(0, '#451a03');
+            woodGrad.addColorStop(0.5, '#78350f');
+            woodGrad.addColorStop(1, '#451a03');
+            ctx.fillStyle = woodGrad;
+            ctx.strokeStyle = '#b45309';
+            ctx.lineWidth = 2;
+            ctx.fillRect(x, y, obj.width, obj.height);
+            ctx.strokeRect(x, y, obj.width, obj.height);
+
+            ctx.fillStyle = '#1e1b4b';
+            ctx.fillRect(x + 10, y + 10, obj.width - 20, obj.height - 20);
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(x + 18, y + 14, 18, 12);
+        }
+
+        function renderBookshelf(ctx, obj) {
+            let x = obj.x - obj.width / 2;
+            let y = obj.y - obj.height / 2;
+
+            if (!obj.searched) drawUnsearchedOutline(ctx, x, y, obj.width, obj.height);
+
+            ctx.fillStyle = '#3f2305';
+            ctx.strokeStyle = '#92400e';
+            ctx.lineWidth = 2;
+            ctx.fillRect(x, y, obj.width, obj.height);
+            ctx.strokeRect(x, y, obj.width, obj.height);
+
+            ctx.strokeStyle = '#78350f';
+            ctx.beginPath();
+            ctx.moveTo(x, y + obj.height * 0.35); ctx.lineTo(x + obj.width, y + obj.height * 0.35);
+            ctx.moveTo(x, y + obj.height * 0.7); ctx.lineTo(x + obj.width, y + obj.height * 0.7);
+            ctx.stroke();
+
+            const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
+            let bx = x + 6;
+            for (let i = 0; i < 6; i++) {
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fillRect(bx, y + 6, 7, 18);
+                bx += 9;
+            }
+        }
+
+        function renderFilingCabinet(ctx, obj) {
+            let x = obj.x - obj.width / 2;
+            let y = obj.y - obj.height / 2;
+
+            if (!obj.searched) drawUnsearchedOutline(ctx, x, y, obj.width, obj.height);
+
+            let steelGrad = ctx.createLinearGradient(x, y, x + obj.width, y);
+            steelGrad.addColorStop(0, '#334155');
+            steelGrad.addColorStop(0.5, '#64748b');
+            steelGrad.addColorStop(1, '#334155');
+            ctx.fillStyle = steelGrad;
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.fillRect(x, y, obj.width, obj.height);
+            ctx.strokeRect(x, y, obj.width, obj.height);
+
+            let dh = obj.height / 3;
+            for (let i = 0; i < 3; i++) {
+                let dy = y + i * dh;
+                ctx.strokeStyle = '#1e293b';
+                ctx.strokeRect(x + 3, dy + 2, obj.width - 6, dh - 4);
+
+                ctx.fillStyle = '#fbbf24';
+                ctx.fillRect(obj.x - 8, dy + dh / 2 - 2, 16, 4);
+            }
+        }
+
+        function renderHighQualityVault(ctx, obj) {
+            let x = obj.x - obj.width / 2;
+            let y = obj.y - obj.height / 2;
+
+            let steelGrad = ctx.createRadialGradient(obj.x, obj.y, 5, obj.x, obj.y, obj.width / 2);
+            steelGrad.addColorStop(0, '#475569');
+            steelGrad.addColorStop(0.7, '#1e293b');
+            steelGrad.addColorStop(1, '#0f172a');
+            ctx.fillStyle = steelGrad;
+            ctx.strokeStyle = hasVaultKey ? '#34d399' : '#f59e0b';
+            ctx.lineWidth = 3;
+            ctx.fillRect(x, y, obj.width, obj.height);
+            ctx.strokeRect(x, y, obj.width, obj.height);
+
+            ctx.fillStyle = '#020617';
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(obj.x, obj.y, obj.width * 0.22, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = hasVaultKey ? '#34d399' : '#e2e8f0';
+            ctx.beginPath();
+            ctx.arc(obj.x, obj.y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function renderFlashlightCanvas() {
+            flashCtx.clearRect(0, 0, flashCanvas.width, flashCanvas.height);
+            flashCtx.fillStyle = '#020617';
+            flashCtx.fillRect(0, 0, flashCanvas.width, flashCanvas.height);
+
+            flashCtx.save();
+            flashCtx.beginPath();
+            flashCtx.arc(flashPos.x, flashPos.y, flashRadius, 0, Math.PI * 2);
+            flashCtx.clip();
+
+            flashCtx.fillStyle = '#1c1917';
+            flashCtx.fillRect(0, 0, flashCanvas.width, flashCanvas.height);
+
+            flashCtx.strokeStyle = '#292524';
+            flashCtx.lineWidth = 1;
+            for (let px = 0; px < flashCanvas.width; px += 30) {
+                flashCtx.beginPath(); flashCtx.moveTo(px, 0); flashCtx.lineTo(px, flashCanvas.height); flashCtx.stroke();
+            }
+            for (let py = 0; py < flashCanvas.height; py += 30) {
+                flashCtx.beginPath(); flashCtx.moveTo(0, py); flashCtx.lineTo(flashCanvas.width, py); flashCtx.stroke();
+            }
+
+            let lightGrad = flashCtx.createRadialGradient(flashPos.x, flashPos.y, 5, flashPos.x, flashPos.y, flashRadius);
+            lightGrad.addColorStop(0, 'rgba(79, 70, 229, 0.45)');
+            lightGrad.addColorStop(0.7, 'rgba(30, 27, 75, 0.25)');
+            lightGrad.addColorStop(1, '#020617');
+            flashCtx.fillStyle = lightGrad;
+            flashCtx.fillRect(0, 0, flashCanvas.width, flashCanvas.height);
+
+            roomObjects.forEach((obj) => {
+                if (obj.type === 'vault') {
+                    renderHighQualityVault(flashCtx, obj);
+                } else if (obj.type === 'desk') {
+                    renderExecutiveDesk(flashCtx, obj);
+                } else if (obj.type === 'bookshelf') {
+                    renderBookshelf(flashCtx, obj);
+                } else {
+                    renderFilingCabinet(flashCtx, obj);
+                }
+            });
+
+            dustParticles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < 0) p.x = flashCanvas.width;
+                if (p.x > flashCanvas.width) p.x = flashCanvas.width;
+                if (p.y < 0) p.y = flashCanvas.height;
+                if (p.y > flashCanvas.height) p.y = flashCanvas.height;
+
+                let d = Math.hypot(p.x - flashPos.x, p.y - flashPos.y);
+                if (d < flashRadius) {
+                    flashCtx.fillStyle = `rgba(254, 240, 138, ${p.alpha})`;
+                    flashCtx.beginPath();
+                    flashCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    flashCtx.fill();
+                }
+            });
+
+            flashCtx.restore();
+
+            flashCtx.save();
+            let rimGlow = flashCtx.createRadialGradient(flashPos.x, flashPos.y, flashRadius - 6, flashPos.x, flashPos.y, flashRadius + 15);
+            rimGlow.addColorStop(0, 'rgba(250, 204, 21, 0.25)');
+            rimGlow.addColorStop(0.7, 'rgba(0, 0, 0, 0.95)');
+            rimGlow.addColorStop(1, 'rgba(2, 6, 23, 0.99)');
+            flashCtx.fillStyle = rimGlow;
+            flashCtx.beginPath();
+            flashCtx.arc(flashPos.x, flashPos.y, flashRadius + 15, 0, Math.PI * 2);
+            flashCtx.rect(flashCanvas.width, 0, -flashCanvas.width, flashCanvas.height);
+            flashCtx.fill();
+            flashCtx.restore();
+        }
+
+        function flashlightLoop() {
+            if (isFlashActive) {
+                updateFlashlightPhysics();
+                renderFlashlightCanvas();
+                flashLoopId = requestAnimationFrame(flashlightLoop);
+            }
+        }
+
+        function startMazeGame() {
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('game-over-overlay').classList.add('hidden');
+            document.getElementById('stage-flashlight').classList.add('hidden');
+            document.getElementById('stage-envelope').classList.add('hidden');
+            document.getElementById('stage-maze').classList.remove('hidden');
+
+            setupMazeDimensions();
+            isMazeActive = true;
+
+            if (mazeLoopId) cancelAnimationFrame(mazeLoopId);
+
+            function loop() {
+                if (isMazeActive) {
+                    updateMazePhysics();
+                    renderMazeCanvas();
+                    mazeLoopId = requestAnimationFrame(loop);
+                }
+            }
+            loop();
+        }
+
+        function transitionToFlashlightStage() {
+            isMazeActive = false;
+            if (mazeLoopId) cancelAnimationFrame(mazeLoopId);
+
+            document.getElementById('stage-maze').classList.add('hidden');
+            document.getElementById('stage-flashlight').classList.remove('hidden');
+
+            setupFlashlightDimensions();
+            isFlashActive = true;
+            document.getElementById('flashlight-status-text').innerText = "Move flashlight & tap SEARCH to inspect!";
+
+            if (flashLoopId) cancelAnimationFrame(flashLoopId);
+            flashlightLoop();
+        }
+
+        function transitionToEnvelopeStage() {
+            document.getElementById('stage-flashlight').classList.add('hidden');
+            document.getElementById('stage-envelope').classList.remove('hidden');
+            triggerConfetti();
+        }
+
+        function triggerConfetti() {
+            const colors = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
+            const container = document.getElementById('stage-envelope');
+
+            for (let i = 0; i < 40; i++) {
+                const particle = document.createElement('div');
+                const size = Math.random() * 8 + 5;
+                particle.style.position = 'absolute';
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `-20px`;
+                particle.style.opacity = Math.random() + 0.5;
+                particle.style.zIndex = '50';
+                particle.style.pointerEvents = 'none';
+
+                const fallDuration = Math.random() * 2.5 + 2;
+                const swing = (Math.random() - 0.5) * 180;
+
+                particle.animate([
+                    { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate(${swing}px, ${window.innerHeight + 40}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                ], {
+                    duration: fallDuration * 1000,
+                    easing: 'ease-out'
+                });
+
+                container.appendChild(particle);
+                setTimeout(() => particle.remove(), fallDuration * 1000);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            const startBtn = document.getElementById('btn-start');
+            if (startBtn) {
+                startBtn.addEventListener('click', () => {
+                    sound.init();
+                    startMazeGame();
+                });
+            }
+
+            const instructionsBtn = document.getElementById('btn-instructions');
+            if (instructionsBtn) {
+                instructionsBtn.addEventListener('click', () => {
+                    sound.init();
+                    document.getElementById('modal-instructions').classList.remove('hidden');
+                });
+            }
+
+            const closeModalBtn = document.getElementById('btn-close-modal');
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', () => {
+                    document.getElementById('modal-instructions').classList.add('hidden');
+                });
+            }
+
+            const modalCloseBtn = document.getElementById('btn-modal-close');
+            if (modalCloseBtn) {
+                modalCloseBtn.addEventListener('click', () => {
+                    document.getElementById('modal-instructions').classList.add('hidden');
+                });
+            }
+
+            const retryBtn = document.getElementById('btn-retry');
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => {
+                    sound.init();
+                    startMazeGame();
+                });
+            }
+
+            const replayBtn = document.getElementById('btn-replay');
+            const envelopeElem = document.getElementById('interactive-envelope');
+
+            if (envelopeElem) {
+                envelopeElem.addEventListener('click', () => {
+                    envelopeElem.classList.toggle('open');
+                    sound.playWin();
+                    triggerConfetti();
+                });
+            }
+
+            if (replayBtn) {
+                replayBtn.addEventListener('click', () => {
+                    sound.init();
+                    if (envelopeElem) envelopeElem.classList.remove('open');
+                    document.getElementById('stage-envelope').classList.add('hidden');
+                    document.getElementById('menu-screen').classList.remove('hidden');
+                });
+            }
+
+            // Directional Controllers binding for Stage 1 & Stage 2
+            const directions = ['up', 'down', 'left', 'right'];
+            directions.forEach(dir => {
+                const buttons = document.querySelectorAll(`.dpad-${dir}`);
+                buttons.forEach(btn => {
+                    const pressHandler = (e) => {
+                        e.preventDefault();
+                        keys[dir] = true;
+                        btn.classList.add('active-btn');
+                    };
+                    const releaseHandler = (e) => {
+                        e.preventDefault();
+                        keys[dir] = false;
+                        btn.classList.remove('active-btn');
+                    };
+
+                    btn.addEventListener('mousedown', pressHandler);
+                    btn.addEventListener('mouseup', releaseHandler);
+                    btn.addEventListener('mouseleave', releaseHandler);
+                    btn.addEventListener('touchstart', pressHandler, { passive: false });
+                    btn.addEventListener('touchend', releaseHandler, { passive: false });
+                });
+            });
+
+            // Action / Search Button binding for Stage 2
+            const actionButtons = document.querySelectorAll('.action-btn');
+            actionButtons.forEach(actionBtn => {
+                const triggerAction = (e) => {
+                    e.preventDefault();
+                    if (isFlashActive) {
+                        handleFlashlightAction();
+                    }
+                };
+                actionBtn.addEventListener('click', triggerAction);
+                actionBtn.addEventListener('touchstart', triggerAction, { passive: false });
+            });
+
+            // Audio Toggle Button binding
+            const audioToggleButtons = document.querySelectorAll('.audio-toggle');
+            audioToggleButtons.forEach(audioBtn => {
+                audioBtn.addEventListener('click', () => {
+                    sound.init();
+                    sound.enabled = !sound.enabled;
+                    const icons = document.querySelectorAll('.audio-icon');
+                    icons.forEach(icon => {
+                        if (sound.enabled) {
+                            icon.className = 'fas fa-volume-up audio-icon';
+                        } else {
+                            icon.className = 'fas fa-volume-mute audio-icon';
+                        }
+                    });
+                });
+            });
+        });
+
+        // Keyboard Movement Controls & Spacebar Action
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (e.key === ' ' || e.key === 'Enter') {
+                if (isFlashActive) handleFlashlightAction();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        window.addEventListener('resize', () => {
+            if (isMazeActive) setupMazeDimensions();
+            if (isFlashActive) setupFlashlightDimensions();
+        });
+    </script>
+</body>
+</html>
